@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const transactionController = require("../controllers/transactionController");
+const authMiddleware = require("../middlewares/authMiddleware");
 
 // Route pour ajouter une transaction
 router.post("/add", transactionController.addTransaction);
@@ -19,5 +20,8 @@ router.get(
   "/filter/:accountId/period",
   transactionController.filterTransactionsByPeriod
 );
+
+// Route to get all transactions across all accounts
+router.get("/all", authMiddleware, transactionController.getAllTransactions);
 
 module.exports = router;

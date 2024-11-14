@@ -36,9 +36,9 @@ exports.addTransaction = async (req, res) => {
 
     // Mettre à jour le solde du compte
     if (type === "deposit") {
-      account.balance += amount;
+      account.balance = Number(account.balance) + Number(amount);
     } else if (type === "withdrawal") {
-      account.balance -= amount;
+      ccount.balance = Number(account.balance) - Number(amount);
     }
     await account.save();
 
@@ -95,6 +95,28 @@ exports.filterTransactionsByType = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erreur serveur." });
+  }
+};
+
+// Controller function to get all transactions for all accounts
+exports.getAllTransactions = async (req, res) => {
+  try {
+    // Assuming user ID is available in the token and added to the request by auth middleware
+    const userId = req.user.id;
+
+    // Fetch all transactions associated with the user's accounts
+    const transactions = await Transaction.find({ userId }).sort({ date: -1 });
+
+    res.status(200).json({
+      success: true,
+      transactions,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to retrieve transactions",
+      error: error.message,
+    });
   }
 };
 
